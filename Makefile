@@ -66,8 +66,11 @@ $(GORELEASE): PACKAGE=golang.org/x/exp/cmd/gorelease
 GOVULNCHECK = $(TOOLS)/govulncheck
 $(TOOLS)/govulncheck: PACKAGE=golang.org/x/vuln/cmd/govulncheck
 
+TESTIFYLINT = $(TOOLS)/testifylint
+$(TOOLS)/testifylint: PACKAGE=github.com/Antonboom/testifylint
+
 .PHONY: tools
-tools: $(CROSSLINK) $(GOLANGCI_LINT) $(MISSPELL) $(GOCOVMERGE) $(STRINGER) $(PORTO) $(GOJQ) $(SEMCONVGEN) $(MULTIMOD) $(SEMCONVKIT) $(GOTMPL) $(GORELEASE)
+tools: $(CROSSLINK) $(GOLANGCI_LINT) $(MISSPELL) $(GOCOVMERGE) $(STRINGER) $(PORTO) $(GOJQ) $(SEMCONVGEN) $(MULTIMOD) $(SEMCONVKIT) $(GOTMPL) $(GORELEASE) $(TESTIFYLINT)
 
 # Virtualized python tools via docker
 
@@ -198,6 +201,14 @@ golangci-lint/%: $(GOLANGCI_LINT)
 	@echo 'golangci-lint $(if $(ARGS),$(ARGS) ,)$(DIR)' \
 		&& cd $(DIR) \
 		&& $(GOLANGCI_LINT) run --allow-serial-runners $(ARGS)
+
+.PHONY: testifylint
+testifylint: $(OTEL_GO_MOD_DIRS:%=testifylint/%)
+testifylint/%: DIR=$*
+testifylint/%: $(TESTIFYLINT)
+	@echo 'testifylint -fix ./... in $(DIR)' \
+			&& cd $(DIR) \
+			&& $(TESTIFYLINT) --enable-all --disable=empty,error-is-as,error-nil,expected-actual,float-compare,go-require,len,negative-positive,require-error,suite-extra-assert-call -fix ./...
 
 .PHONY: crosslink
 crosslink: $(CROSSLINK)
