@@ -460,7 +460,7 @@ func (i *inserter[N]) logConflict(id instID) {
 	global.Warn(msg, args...)
 }
 
-func (i *inserter[N]) instID(kind InstrumentKind, stream Stream) instID {
+func (*inserter[N]) instID(kind InstrumentKind, stream Stream) instID {
 	var zero N
 	return instID{
 		Name:        stream.Name,

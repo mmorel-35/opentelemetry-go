@@ -832,12 +832,12 @@ func newTextMapWrapperForInject(carrier any) (*textMapWrapper, error) {
 
 type textMapWriter struct{}
 
-func (t *textMapWriter) Set(string, string) {
+func (*textMapWriter) Set(string, string) {
 	// maybe print a warning log.
 }
 
 type textMapReader struct{}
 
-func (t *textMapReader) ForeachKey(_ func(key, val string) error) error {
+func (*textMapReader) ForeachKey(_ func(key, val string) error) error {
 	return nil // maybe print a warning log.
 }
